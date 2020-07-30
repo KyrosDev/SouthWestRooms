@@ -7,9 +7,14 @@ require("dotenv").config();
 /* APPLICATION CONFIG */
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); // Parse requests
 app.use(helmet());
-app.use(morgan("dev"));
+app.use(
+  cors({
+    allowedHeaders: process.env.CORS || "https://localhost:8080/", // Allow hosts
+  })
+);
+app.use(morgan("dev")); // Display requests into console
 
 /* ROUTES */
 app.get("/", (req, res) => {
@@ -22,8 +27,8 @@ app.use("/api/v1/rooms/", require("./routes/rooms.routes"));
 /* MIDDLEWARES */
 const middlewares = require("./middlewares");
 
-app.use(middlewares.errorHandler);
-app.use(middlewares.notFound);
+app.use(middlewares.errorHandler); // Send Error
+app.use(middlewares.notFound); // Send 404 error if route doesn't exists
 
 /* RUN APPLICATION */
 const PORT = process.env.PORT || 5000;

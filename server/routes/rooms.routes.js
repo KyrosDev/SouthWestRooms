@@ -4,15 +4,16 @@ const Joi = require("@hapi/joi");
 const db = require("monk")("localhost/southwestrooms");
 
 function createShortcode(len) {
-  const a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
-  let result = "";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789"; // Available chars
+  let result = ""; // Shortcode
   for (let i = 0; i < len; i++) {
-    result = result + a[Math.floor(Math.random() * a.length + 1)];
+    result = result + chars[Math.floor(Math.random() * chars.length + 1)]; // Get random char and put it into result
   }
-  return result;
+  return result; // Return shortcode
 }
 
 const roomModel = Joi.object().keys({
+  shortcode: Joi.string().required(),
   room_name: Joi.string().required(),
   small_description: Joi.string().max(100).required(),
   long_description: Joi.string().required(),
@@ -40,7 +41,6 @@ const roomModel = Joi.object().keys({
     "2": Joi.boolean().required(),
     "1": Joi.boolean().required(),
   }),
-  shortcode: Joi.string().required(),
 });
 
 const rooms = db.get("rooms");
@@ -48,48 +48,48 @@ const rooms = db.get("rooms");
 /* GET ALL ROOMS */
 router.get("/", (req, res, next) => {
   rooms
-    .find()
+    .find() // Get all rooms
     .then((room) => {
-      res.json(room);
+      res.json(room); // Send array with rooms
     })
     .catch((e) => {
-      next(e);
+      next(e); // Send Error
     });
 });
 
 /* GET ROOM BY ID */
 router.get("/:shortcode", (req, res, next) => {
-  const shortcode = req.params.shortcode;
+  const shortcode = req.params.shortcode; // Get shortcode from params
   rooms
-    .findOne({ shortcode })
+    .findOne({ shortcode }) // Check if item with that shortcode exists
     .then((room) => {
       if (room !== null) {
-        res.json(room);
+        res.json(room); // If item exist respond with room
       } else {
-        res.json({ message: `Room with shortcode '${shortcode}' not found` });
+        res.json({ message: `Room with shortcode '${shortcode}' not found` }); // If item doesn't exists responde with error
       }
     })
     .catch((e) => {
-      next(e);
+      next(e); // Send Error
     });
 });
 
 /* CREATE NEW ROOM */
 router.post("/", (req, res, next) => {
-  const room = req.body;
-  const shortcode = createShortcode(8);
-  room.shortcode = shortcode;
-  const result = Joi.validate(room, roomModel);
+  const room = req.body; //  Get context of the request
+  const shortcode = createShortcode(8); // Create a shortcode
+  room.shortcode = shortcode; // Add shortcode to body
+  const result = Joi.validate(room, roomModel); // Validate body
   if (result.error) {
-    next(result.error);
+    next(result.error); // Send Error
   } else {
     rooms
-      .insert(room)
+      .insert(room) // Insert new room into DB
       .then((newRoom) => {
-        res.json(newRoom);
+        res.json(newRoom); // Response with the room
       })
       .catch((e) => {
-        next(e);
+        next(e); // Send Error
       });
   }
 });
