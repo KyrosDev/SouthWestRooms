@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 /* ROOMS ROUTES */
 app.use("/api/v1/rooms/", require("./routes/rooms.routes"));
 app.use("/api/v1/payments/", require("./routes/payments.routes"));
+app.use("/api/v1/mails/", require("./routes/mails.routes"));
 
 /* MIDDLEWARES */
 const middlewares = require("./middlewares");
