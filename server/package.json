@@ -17,7 +17,8 @@
     "helmet": "^3.23.3",
     "joi": "^17.1.1",
     "monk": "^7.3.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "stripe": "^8.80.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
